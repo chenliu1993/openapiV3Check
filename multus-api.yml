@@ -1,0 +1,427 @@
+openapi: "3.0.2"
+info:
+  title: multus-cni.community.tanzu.vmware.com.3.7.1 values schema
+  description: This is for multus-cni valuesSchema.
+  version: "3.7.1"
+servers:
+  - url: 127.0.0.1
+paths:
+  /harbor:
+    get:
+      summary: Used for getting harbor related values.
+      description: Returns all harbor related values.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HarborValues"
+  /multus:
+    get:
+      summary: Used for getting multus-cni related values.
+      description: Returns all multus-cni related values.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MultusValues"
+              examples:
+                multusValuesExample:
+                  value:
+                    namespace: kube-system
+                    image:
+                      repository: docker.io/nfvpe
+                      name: multus
+                      tag: stable
+                    daemonset:
+                    args:
+                      - "--multus-conf-file=auto"
+                      - "--cni-version=0.3.1"
+components:
+  schemas:
+    MultusValues:
+      title: multus-cni.community.tanzu.vmware.com.3.7.1 values schema
+      properties:
+        namespace:
+          type: string
+          description: Namespace where multus-cni daemonset will be deployed.
+          default: kube-system
+        image:
+          type: object
+          description: Multus CNI image related configurations.
+          properties:
+            repository:
+              type: string
+              description: Registry for Multus CNI image.
+            name:
+              type: string
+              description: Name for Multus CNI image.
+            tag:
+              type: string
+              description: Tag for Multus CNI image.
+        daemonset:
+          type: object
+          description: DaemonSet related configurations.
+          properties:
+            args:
+              type: array
+              description: |
+                Args passed via command-line to multus-cni
+                Below items are examples same as upstream settings
+                For more guide, please refer to
+                https://github.com/k8snetworkplumbingwg/multus-cni/tree/master/docs
+              items:
+                type: string
+    HarborValues:
+      title: harbor.community.tanzu.vmware.com.2.2.2
+      properties:
+        image:
+          description: "Docker images setting."
+          type: object
+          properties:
+            repository:
+              type: string
+            tag:
+              type: string
+            pullPolicy:
+              type: string
+        namespace:
+          description: "The namespace to install Harbor."
+          type: string
+        hostname:
+          description: "The FQDN for accessing Harbor admin UI and Registry service."
+          type: string
+        port:
+          type: object
+          description: "The network port of the Envoy service in Contour or other Ingress Controller."
+          properties:
+            https:
+              type: integer
+        logLevel:
+          type: string
+          description: "The log level of core, exporter, jobservice, registry. Its value is debug, info, warning, error or fatal."
+        tlsCertificate:
+          type: object
+          description: "The certificate for the ingress if you want to use your own TLS certificate."
+          properties:
+            tls.crt:
+              type: string
+              description: "The certificate."
+            tls.key:
+              type: string
+              description: "The private key."
+            ca.crt:
+              type: string
+              description: "The certificate of CA, this enables the download link on portal to download the certificate of CA."
+        enableContourHttpProxy:
+          type: boolean
+          description: "Use contour http proxy instead of the ingress when it's true."
+        harborAdminPassword:
+          type: string
+          description: "The initial password of Harbor admin."
+        secretKey:
+          type: string
+          description: "The secret key used for encryption. Must be a string of 16 chars."
+        database:
+          type: object
+          properties:
+            password:
+              type: string
+              description: "The initial password of the postgres database."
+        core:
+          type: object
+          properties:
+            replicas:
+              type: integer
+            secret:
+              type: string
+              description: "Secret is used when core server communicates with other components."
+            xsrfKey:
+              type: string
+              description: "The XSRF key. Must be a string of 32 chars."
+        jobservice:
+          type: object
+          properties:
+            replicas:
+              type: integer
+            secret:
+              type: string
+              description: "Secret is used when job service communicates with other components."
+        registry:
+          type: object
+          properties:
+            replicas:
+              type: integer
+            secret:
+              type: string
+              description: "Secret is used to secure the upload state from client and registry storage backend."
+        notary:
+          type: object
+          properties:
+            enabled:
+              type: boolean
+              description: "Whether to install Notary."
+        trivy:
+          type: object
+          properties:
+            enabled:
+              type: boolean
+              description: "Enabled the flag to enable Trivy scanner."
+            replicas:
+              type: integer
+            gitHubToken:
+              type: string
+              description: "The gitHubToken the GitHub access token to download Trivy DB."
+            skipUpdate:
+              type: boolean
+              description: "SkipUpdate the flag to disable Trivy DB downloads from GitHub."
+        persistence:
+          type: object
+          description: "The persistence is always enabled and a default StorageClass is needed in the k8s cluster to provision volumes dynamically."
+          properties:
+            persistentVolumeClaim:
+              type: object
+              properties:
+                registry:
+                  type: object
+                  properties:
+                    existingClaim:
+                      type: string
+                      description: "Use the existing PVC which must be created manually before bound, and specify the subPath if the PVC is shared with other components."
+                    storageClass:
+                      type: string
+                      description: "Specify the storageClass used to provision the volume."
+                    subPath:
+                      type: string
+                    accessMode:
+                      type: string
+                    size:
+                      type: string
+                jobservice:
+                  type: object
+                  properties:
+                    existingClaim:
+                      type: string
+                    storageClass:
+                      type: string
+                    subPath:
+                      type: string
+                    accessMode:
+                      type: string
+                    size:
+                      type: string
+                database:
+                  type: object
+                  properties:
+                    existingClaim:
+                      type: string
+                    storageClass:
+                      type: string
+                    subPath:
+                      type: string
+                    accessMode:
+                      type: string
+                    size:
+                      type: string
+                redis:
+                  type: object
+                  properties:
+                    existingClaim:
+                      type: string
+                    storageClass:
+                      type: string
+                    subPath:
+                      type: string
+                    accessMode:
+                      type: string
+                    size:
+                      type: string
+                trivy:
+                  type: object
+                  properties:
+                    existingClaim:
+                      type: string
+                    storageClass:
+                      type: string
+                    subPath:
+                      type: string
+                    accessMode:
+                      type: string
+                    size:
+                      type: string
+            imageChartStorage:
+              type: object
+              description: "Define which storage backend is used for registry and chartmuseum to store images and charts."
+              properties:
+                disableredirect:
+                  type: boolean
+                  description: "Specify whether to disable `redirect` for images and chart storage."
+                type:
+                  type: string
+                  description: "Specify the type of storage."
+                filesystem:
+                  type: object
+                  description: "The type must be filesystem if you want to use persistent volumes for registry and chartmuseum."
+                  properties:
+                    rootdirectory:
+                      type: string
+                azure:
+                  type: object
+                  properties:
+                    accountname:
+                      type: string
+                    accountkey:
+                      type: string
+                    container:
+                      type: string
+                    realm:
+                      type: string
+                gcs:
+                  type: object
+                  properties:
+                    bucket:
+                      type: string
+                    encodedkey:
+                      type: string
+                      description: "The base64 encoded json file which contains the key."
+                    rootdirectory:
+                      type: string
+                    chunksize:
+                      type: integer
+                s3:
+                  type: object
+                  properties:
+                    region:
+                      type: string
+                    bucket:
+                      type: string
+                    accesskey:
+                      type: string
+                    secretkey:
+                      type: string
+                    regionendpoint:
+                      type: string
+                    encrypt:
+                      type: boolean
+                    keyid:
+                      type: string
+                    secure:
+                      type: boolean
+                    v4auth:
+                      type: boolean
+                    chunksize:
+                      type: string
+                    rootdirectory:
+                      type: string
+                    storageclass:
+                      type: string
+                swift:
+                  type: object
+                  properties:
+                    authurl:
+                      type: string
+                    username:
+                      type: string
+                    password:
+                      type: string
+                    container:
+                      type: string
+                    region:
+                      type: string
+                    tenant:
+                      type: string
+                    tenantid:
+                      type: string
+                    domain:
+                      type: string
+                    domainid:
+                      type: string
+                    trustid:
+                      type: string
+                    insecureskipverify:
+                      type: boolean
+                    chunksize:
+                      type: string
+                    prefix:
+                      type: string
+                    secretkey:
+                      type: string
+                    accesskey:
+                      type: string
+                    authversion:
+                      type: integer
+                    endpointtype:
+                      type: string
+                    tempurlcontainerkey:
+                      type: integer
+                    tempurlmethods:
+                      type: string
+                oss:
+                  type: object
+                  properties:
+                    accesskeyid:
+                      type: string
+                    accesskeysecret:
+                      type: string
+                    region:
+                      type: string
+                    bucket:
+                      type: string
+                    endpoint:
+                      type: string
+                    internal:
+                      type: boolean
+                    encrypt:
+                      type: boolean
+                    secure:
+                      type: boolean
+                    chunksize:
+                      type: string
+                    rootdirectory:
+                      type: string
+        proxy:
+          type: object
+          description: "The http/https network proxy for core, exporter, jobservice, trivy."
+          properties:
+            httpProxy:
+              type: string
+            httpsProxy:
+              type: string
+            noProxy:
+              type: string
+        # The PSP names used by Harbor pods. The names are separated by ','. 'null' means all PSP can be used.
+        pspNames:
+          type: string
+          description: "The PSP names used by Harbor pods. The names are separated by ','. 'null' means all PSP can be used."
+
+        # The metrics used by core, registry and exporter
+        metrics:
+          type: object
+          description: "The metrics used by core, registry and exporter."
+          properties:
+            enabled:
+              type: boolean
+            core:
+              type: object
+              properties:
+                path:
+                  type: string
+                port:
+                  type: integer
+            registry:
+              type: object
+              properties:
+                path:
+                  type: string
+                port:
+                  type: integer
+            exporter:
+              type: object
+              properties:
+                path:
+                  type: string
+                port:
+                  type: integer
