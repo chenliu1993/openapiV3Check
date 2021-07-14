@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -16,26 +15,26 @@ import (
 func main() {
 	ctx := context.Background()
 	loader := &openapi3.Loader{Context: ctx}
-	doc, _ := loader.LoadFromFile("./multus-api.yml")
+	doc, _ := loader.LoadFromFile("./api-spec.yml")
 	err := doc.Validate(ctx)
 	if err != nil {
 		panic(err)
 	}
-	// fmt.Printf("%+v\n", *doc)
 	router, err := legacyrouter.NewRouter(doc)
 	if err != nil {
 		panic(err)
 	}
-	httpReq, err := http.NewRequest(http.MethodGet, "/values", nil)
+	httpReq, err := http.NewRequest(http.MethodGet, "127.0.0.1/harbor", nil)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("%+v\n", *httpReq)
+
 	// Find route
 	route, pathParams, err := router.FindRoute(httpReq)
 	if err != nil {
 		panic(err)
 	}
+
 	// Validate request
 	requestValidationInput := &openapi3filter.RequestValidationInput{
 		Request:    httpReq,
@@ -48,7 +47,7 @@ func main() {
 
 	var (
 		respStatus      = 200
-		respContentType = "text/plain"
+		respContentType = "application/json"
 		respBody        = bytes.NewBufferString(`{}`)
 	)
 
@@ -59,7 +58,10 @@ func main() {
 		Header:                 http.Header{"Content-Type": []string{respContentType}},
 	}
 	if respBody != nil {
-		data, _ := json.Marshal(respBody)
+		data, err := json.Marshal(respBody)
+		if err != nil {
+			panic(err)
+		}
 		responseValidationInput.SetBodyBytes(data)
 	}
 
