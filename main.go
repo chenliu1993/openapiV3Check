@@ -15,7 +15,7 @@ import (
 func main() {
 	ctx := context.Background()
 	loader := &openapi3.Loader{Context: ctx}
-	doc, _ := loader.LoadFromFile("./api-spec.yml")
+	doc, _ := loader.LoadFromFile("./sriov-dp.yml")
 	err := doc.Validate(ctx)
 	if err != nil {
 		panic(err)
@@ -24,7 +24,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	httpReq, err := http.NewRequest(http.MethodGet, "127.0.0.1/harbor", nil)
+	httpReq, err := http.NewRequest(http.MethodGet, "127.0.0.1/sriov-dp", nil)
 	if err != nil {
 		panic(err)
 	}

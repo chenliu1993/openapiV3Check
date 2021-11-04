@@ -1,6 +1,6 @@
 openapi: "3.0.2"
 info:
-  title: Values Schema
+  title: SRIOVDP Values Schema
   description: This is for validating valuesSchema.
   version: "3.3.2"
 servers:
@@ -10,13 +10,14 @@ paths:
     get:
       summary: Used for getting srio-vdp related values.
       description: Returns all sriov-dp related values.
-      responses:∏
+      responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/SriovDPValues"
+
 components:
   schemas:
     SriovDPValues:
