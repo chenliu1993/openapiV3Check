@@ -1,10 +1,9 @@
 package main
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
-	"log"
+	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strings"
 
@@ -26,18 +25,15 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	httpReq, err := http.NewRequest(http.MethodGet, strings.TrimSpace("http://localhost:8000/sriov-dp"), nil)
+	httpReq, err := http.NewRequest(http.MethodGet, strings.TrimSpace("http://127.0.0.1:8000/sriov-dp"), nil)
 	if err != nil {
 		panic(err)
 	}
-
-	log.Println(httpReq)
 	// Find route
 	route, pathParams, err := router.FindRoute(httpReq)
 	if err != nil {
 		panic(err)
 	}
-
 	// Validate request
 	requestValidationInput := &openapi3filter.RequestValidationInput{
 		Request:    httpReq,
@@ -51,23 +47,26 @@ func main() {
 	var (
 		respStatus      = 200
 		respContentType = "application/json"
-		respBody        = bytes.NewBufferString(`{}`)
+		// respBody        = bytes.NewBufferString(`{}`)
 	)
 
-	log.Println("Response:", respStatus)
 	responseValidationInput := &openapi3filter.ResponseValidationInput{
 		RequestValidationInput: requestValidationInput,
 		Status:                 respStatus,
 		Header:                 http.Header{"Content-Type": []string{respContentType}},
 	}
-	if respBody != nil {
-		data, err := json.Marshal(respBody)
-		if err != nil {
-			panic(err)
-		}
-		log.Println(string(data))
-		responseValidationInput.SetBodyBytes(data)
+
+	resp, err := http.Get("http://127.0.0.1:8000/sriov-dp")
+	if err != nil {
+		panic(err)
 	}
+	defer resp.Body.Close()
+	output, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(string(output))
+	responseValidationInput.SetBodyBytes(output)
 
 	// Validate response.
 	if err := openapi3filter.ValidateResponse(ctx, responseValidationInput); err != nil {
