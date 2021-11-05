@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/openapi3filter"
@@ -20,15 +21,17 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
 	router, err := legacyrouter.NewRouter(doc)
 	if err != nil {
 		panic(err)
 	}
-	httpReq, err := http.NewRequest(http.MethodGet, "127.0.0.1/sriov-dp", nil)
+	httpReq, err := http.NewRequest(http.MethodGet, strings.TrimSpace("http://localhost:8000/sriov-dp"), nil)
 	if err != nil {
 		panic(err)
 	}
 
+	log.Println(httpReq)
 	// Find route
 	route, pathParams, err := router.FindRoute(httpReq)
 	if err != nil {
@@ -62,6 +65,7 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
+		log.Println(string(data))
 		responseValidationInput.SetBodyBytes(data)
 	}
 

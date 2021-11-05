@@ -4,7 +4,7 @@ info:
   description: This is for validating valuesSchema.
   version: "3.3.2"
 servers:
-  - url: 127.0.0.1
+  - url: 127.0.0.1:8000
 paths:
   /sriov-dp:
     get:
