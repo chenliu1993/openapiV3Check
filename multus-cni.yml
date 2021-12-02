@@ -1,0 +1,42 @@
+openapi: "3.0.2"
+info:
+  title: Values Schema
+  description: This is for validating valuesSchema.
+  version: "3.7.1"
+servers:
+  - url: http://127.0.0.1:8000
+paths:
+  /multus:
+    get:
+      summary: Used for getting multus related values.
+      description: Returns all multus related values.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MultusValues"
+components:
+  schemas:
+    MultusValues:
+      title: multus-cni.community.tanzu.vmware.com.3.7.1 values schema
+      properties:
+        namespace:
+          type: string
+          description: Namespace where multus-cni daemonset will be deployed.
+          default: kube-system
+        daemonset:
+          type: object
+          description: DaemonSet related configurations.
+          properties:
+            args:
+              type: array
+              description: |
+                Args passed via command-line to multus-cni
+                Below items are examples same as upstream settings
+                For more guide, please refer to
+                https://github.com/k8snetworkplumbingwg/multus-cni/tree/master/docs
+              items:
+                type: string
+  
