@@ -1,0 +1,81 @@
+openapi: "3.0.2"
+info:
+  title: SRIOVCNI Values Schema
+  description: This is for validating valuesSchema.
+  version: "2.6.1"
+servers:
+  - url: http://127.0.0.1:8000
+paths:
+  /sriov-cni:
+    get:
+      summary: Used for getting sriov-cni related values.
+      description: Returns all sriov-cni related values.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SriovCNIValues"
+              example:
+                summary: test
+                description: test for long
+                value:
+                  namespace: kube-system
+                  daemonset:
+                    resources:
+                      requests:
+                        cpu: 100m
+                        memory: 50Mi
+                      limits:
+                        cpu: 100m
+                        memory: 50Mi
+                    args:
+                      - --cni-bin-dir=/test
+                      - --sriov-bin-dir=/test
+components:
+  schemas:
+    SriovCNIValues:
+      title: sriov-cni.community.tanzu.vmware.com.2.6.1 values schema
+      properties:
+        namespace:
+          type: string
+          description: Namespace where sriov-cni daemonset will be deployed.
+          default: kube-system
+        daemonset:
+          type: object
+          description: DaemonSet related configurations.
+          properties:
+            resources:
+              type: object
+              description: DaemonSet resources settings.
+              properties:
+                requests:
+                  type: object
+                  description: Requests for CPU and memory usage.
+                  properties:
+                    cpu:
+                      type: string
+                      description: Requests for CPU usage.
+                      default: 100m
+                    memory:
+                      type: string
+                      description: Requests for memory usage.
+                      default: 50Mi
+                limits:
+                  type: object
+                  description: Limits for CPU and memory usage.
+                  properties:
+                    cpu:
+                      type: string
+                      description: Limits for CPU usage.
+                      default: 100m
+                    memory:
+                      type: string
+                      description: Limits for memory usage.
+                      default: 50Mi
+            args:
+              type: array
+              description: Args passed via command-line to SR-IOV CNI daemonset.
+              items:
+                type: string

@@ -15,7 +15,7 @@ import (
 func main() {
 	ctx := context.Background()
 	loader := &openapi3.Loader{Context: ctx}
-	doc, _ := loader.LoadFromFile("./sriov-dp.yml")
+	doc, _ := loader.LoadFromFile("./sriov-cni.yml")
 	err := doc.Validate(ctx)
 	if err != nil {
 		panic(err)
@@ -25,7 +25,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	httpReq, err := http.NewRequest(http.MethodGet, strings.TrimSpace("http://127.0.0.1:8000/sriov-dp"), nil)
+	httpReq, err := http.NewRequest(http.MethodGet, strings.TrimSpace("http://127.0.0.1:8000/sriov-cni"), nil)
 	if err != nil {
 		panic(err)
 	}
@@ -56,7 +56,7 @@ func main() {
 		Header:                 http.Header{"Content-Type": []string{respContentType}},
 	}
 
-	resp, err := http.Get("http://127.0.0.1:8000/sriov-dp")
+	resp, err := http.Get("http://127.0.0.1:8000/sriov-cni")
 	if err != nil {
 		panic(err)
 	}
